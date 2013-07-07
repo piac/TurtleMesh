@@ -1,0 +1,4 @@
+Copyright © 2013 Turtle Mesh Contributors. Rights are reserved as in the LICENSE.txt file
+
+A full list of contributors till today's date follows:
+Giulio Piacentino <http://www.giuliopiacentino.com/>
