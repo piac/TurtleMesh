@@ -3,6 +3,9 @@ using Grasshopper.Kernel;
 using Turtle;
 using Turtle.Serialization;
 using TurtleGh.Properties;
+using System.Windows.Forms;
+using System.IO;
+using Grasshopper.Kernel.Attributes;
 
 namespace TurtleGh
 {
@@ -10,7 +13,8 @@ namespace TurtleGh
     {
         public ToObjTextComponent()
             : base("To Obj Text", "ToObjT", "Gives the Obj representation of a TurtleMesh", "Mesh", "Turtle")
-        { }
+        {
+        }
 
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
@@ -18,6 +22,23 @@ namespace TurtleGh
             p.Name = "TurtleMesh";
             p.NickName = "T";
             pManager.AddParameter(p);
+        }
+
+        class SimpleChangeAttributes : GH_ComponentAttributes
+        {
+
+            public SimpleChangeAttributes(ToObjTextComponent cmp) : base(cmp){}
+
+            public override Grasshopper.GUI.Canvas.GH_ObjectResponse RespondToMouseDoubleClick(Grasshopper.GUI.Canvas.GH_Canvas sender, Grasshopper.GUI.GH_CanvasMouseEvent e)
+            {
+                ((ToObjTextComponent)Owner).OnExport(this, EventArgs.Empty);
+                return base.RespondToMouseDoubleClick(sender, e);
+            }
+        }
+
+        public override void CreateAttributes()
+        {
+            Attributes = new SimpleChangeAttributes(this);
         }
 
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
@@ -46,6 +67,64 @@ namespace TurtleGh
             get
             {
                 return Resources.turtle_toobj;
+            }
+        }
+
+        protected override void AppendAdditionalComponentMenuItems(System.Windows.Forms.ToolStripDropDown menu)
+        {
+            base.AppendAdditionalComponentMenuItems(menu);
+
+            var item = menu.Items.Add("Save as .obj file...", null, OnExport);
+            item.Font = new System.Drawing.Font(item.Font.FontFamily, item.Font.Size, System.Drawing.FontStyle.Bold);
+        }
+
+        private void OnExport(object obj, EventArgs e)
+        {
+            if(Locked) return;
+
+            var param = Params.Output[0];
+
+            foreach (var data in param.VolatileData.AllData(true))
+            {
+                if(data.ScriptVariable() == null) continue;
+
+                var txt = data.ToString();
+
+                try
+                {
+                    var sfd = new SaveFileDialog();
+                    sfd.AddExtension = true;
+                    sfd.Filter = "Obj File (*.obj)|*.obj|Any file (*.*)|*.*";
+                    sfd.FilterIndex = 0;
+                    sfd.OverwritePrompt = true;
+                    if (OnPingDocument() != null)
+                    {
+                        var p = OnPingDocument().FilePath;
+                        if (!string.IsNullOrEmpty(p) && p.Trim().Length > 0)
+                        {
+                            var dir = Path.GetDirectoryName(p);
+                            if (Directory.Exists(dir))
+                            {
+                                sfd.InitialDirectory = dir;
+                            }
+                        }
+                    }
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllText(sfd.FileName, txt);
+                    }
+                    else
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        string.Format
+                            ("An error occurred when saving the file: {0}",
+                            ex.Message
+                        )
+                    );
+                }
             }
         }
     }

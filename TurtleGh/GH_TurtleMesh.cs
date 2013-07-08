@@ -344,5 +344,10 @@ namespace TurtleGh
 
             return base.Write(writer);
         }
+
+        public override object ScriptVariable()
+        {
+            return Value;
+        }
     }
 }
