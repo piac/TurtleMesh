@@ -72,11 +72,13 @@ namespace Turtle.Serialization
 
             var ci = System.Globalization.CultureInfo.InvariantCulture;
             
-            int linecount = 1;
+            int linecount = 0;
 
             string line;
             while ((line = sr.ReadLine()) != null)
             {
+                linecount++;
+
                 if (line.TrimStart(_separators).StartsWith("#", StringComparison.InvariantCultureIgnoreCase)) continue;
 
                 var tokens = line.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
@@ -124,8 +126,6 @@ namespace Turtle.Serialization
                     m.AddFace(f);
                 }
                 //else texture, else normal
-
-                linecount++;
             }
 
             return m;

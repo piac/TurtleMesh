@@ -26,7 +26,6 @@ namespace TurtleGh
 
         class SimpleChangeAttributes : GH_ComponentAttributes
         {
-
             public SimpleChangeAttributes(ToObjTextComponent cmp) : base(cmp){}
 
             public override Grasshopper.GUI.Canvas.GH_ObjectResponse RespondToMouseDoubleClick(Grasshopper.GUI.Canvas.GH_Canvas sender, Grasshopper.GUI.GH_CanvasMouseEvent e)
@@ -76,6 +75,7 @@ namespace TurtleGh
 
             var item = menu.Items.Add("Save as .obj file...", null, OnExport);
             item.Font = new System.Drawing.Font(item.Font.FontFamily, item.Font.Size, System.Drawing.FontStyle.Bold);
+            item.Enabled = Params.Output[0].VolatileDataCount > 0;
         }
 
         private void OnExport(object obj, EventArgs e)
@@ -83,12 +83,15 @@ namespace TurtleGh
             if(Locked) return;
 
             var param = Params.Output[0];
+            if (param.VolatileData == null) return;
 
             foreach (var data in param.VolatileData.AllData(true))
             {
-                if(data.ScriptVariable() == null) continue;
+                if (data == null) continue;
+                var sdata = data.ScriptVariable();
+                if (sdata == null) continue;
 
-                var txt = data.ToString();
+                var txt = sdata.ToString();
 
                 try
                 {

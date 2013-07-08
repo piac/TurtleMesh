@@ -187,7 +187,7 @@ namespace TurtleGh
                 return;
 
             for (int i = 0; i < _polylines.Length; i++)
-                args.Pipeline.DrawPolyline(_polylines[i], args.Color, args.Thickness);
+                args.Pipeline.DrawPolygon(_polylines[i], args.Color, false);
         }
 
         #endregion
