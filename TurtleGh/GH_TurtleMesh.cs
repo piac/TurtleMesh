@@ -311,6 +311,11 @@ namespace TurtleGh
                 target = (Q)(object)RhinoMeshSupport.ExportTriangolatedRhinoMesh(m_value);
                 return true;
             }
+            if (typeof(Q) == (typeof(GH_Mesh)))
+            {
+                target = (Q)(object)new GH_Mesh(RhinoMeshSupport.ExportTriangolatedRhinoMesh(m_value));
+                return true;
+            }
             if (typeof(Q) == typeof(ITurtleMesh))
             {
                 target = (Q)(object)m_value;
