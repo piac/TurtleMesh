@@ -57,13 +57,15 @@ namespace TurtleGh
             for (int i = 0; i < ngons.FaceCount; i++)
             {
                 var f = ngons.FaceAt(i);
-                Polyline p = new Polyline(f.EdgesVerticesCount);
+                Polyline p = new Polyline(f.EdgesVerticesCount + 1);
 
                 for (int j = 0; j < f.EdgesVerticesCount; j++)
                 {
                     var v = ngons.VertexAt(f[j]);
                     p.Add(v.X, v.Y, v.Z);
                 }
+                var closure = ngons.VertexAt(f[0]);
+                p.Add(closure.X, closure.Y, closure.Z);
 
                 polylines[i] = p;
             }
